@@ -1,13 +1,27 @@
 const { input } = require('./input')
 
-let increasesCount = 0
-let sumBefore = input[2] + input[1] + input[0]
-let sumNext = input[2] + input[1] + input[0]
-
-for(let i = 2; i < input.length; i+= 1) {
-  sumBefore = sumNext
-  sumNext = input[i - 2] + input[i - 1] + input[i]
-  if (sumNext - sumBefore > 0) increasesCount += 1
+const calculatePositions = {
+  forward: (horizontalPosition, depthPosition, aimPosition, value) => {
+    return [horizontalPosition + value, depthPosition + (aimPosition * value), aimPosition]
+  },
+  up: (_h, _d, aimPosition, value) => {
+    return [_h, _d, aimPosition - value]
+  },
+  down: (_h, _d, aimPosition, value) => {
+    return [_h, _d, aimPosition + value]
+  },
 }
 
-console.log(increasesCount)
+let horizontal = 0
+let depth = 0
+let aim = 0
+
+input.forEach(instruction => {
+  const [direction, value] = instruction.split(' ')
+  const result = calculatePositions[direction](horizontal, depth, aim, parseInt(value, 10))
+  horizontal = result[0]
+  depth = result[1]
+  aim = result[2]
+})
+
+console.log(horizontal * depth)
